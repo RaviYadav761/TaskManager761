@@ -23,7 +23,8 @@ import {
   Upload,
   Clock,
   Maximize2,
-  Minimize2
+  Minimize2,
+  ChevronLeft
 } from "lucide-react";
 
 const LOCAL_STORAGE_NOTES_V2_KEY = "taskly_notes_v2";
@@ -136,6 +137,7 @@ const Notes = ({
   const [searchQuery, setSearchQuery] = useState("");
   const [sortAsc, setSortAsc] = useState(false);
   const [copiedToast, setCopiedToast] = useState(false);
+  const [mobileNotesView, setMobileNotesView] = useState("list"); // 'list' | 'detail'
 
   // Formatting and file refs
   const galleryInputRef = useRef(null);
@@ -427,6 +429,7 @@ const Notes = ({
 
     setNotes([newNote, ...notes]);
     setSelectedNoteId(newNote.id);
+    setMobileNotesView("detail");
   };
 
   const handleUpdateTitle = (val) => {
@@ -465,7 +468,7 @@ const Notes = ({
   };
 
   const notesTwoColumnContent = (
-    <div className="flex-1 h-screen flex flex-row overflow-hidden bg-[#F5F3ED] p-4 lg:p-6 gap-6 relative">
+    <div className="flex-1 w-full min-h-[calc(100vh-57px)] lg:h-screen flex flex-col lg:flex-row overflow-hidden bg-[#F5F3ED] p-3 sm:p-4 lg:p-6 gap-6 relative">
       {/* Toast Notification */}
       {copiedToast && (
         <div className="absolute top-6 right-8 z-50 bg-black text-white text-xs font-bold px-4 py-2.5 rounded-2xl shadow-xl flex items-center gap-2 animate-in fade-in">
@@ -477,7 +480,7 @@ const Notes = ({
       {/* ======================================================== */}
       {/* 1. LEFT COLUMN: All Notes List                           */}
       {/* ======================================================== */}
-      <div className="w-[330px] lg:w-[370px] bg-white rounded-[32px] p-5 shadow-sm border border-neutral-150 flex flex-col justify-between shrink-0 h-full">
+      <div className={`${mobileNotesView === "list" ? "flex" : "hidden"} lg:flex w-full lg:w-[330px] xl:w-[370px] bg-white rounded-[24px] sm:rounded-[32px] p-4 sm:p-5 shadow-sm border border-neutral-150 flex-col justify-between shrink-0 h-full`}>
         <div className="flex flex-col h-full overflow-hidden">
           {/* Header: All Notes + Sort Icon + Plus Button */}
           <div className="flex items-center justify-between mb-4 pb-2 border-b border-neutral-100">
@@ -527,7 +530,10 @@ const Notes = ({
               return (
                 <div
                   key={note.id}
-                  onClick={() => setSelectedNoteId(note.id)}
+                  onClick={() => {
+                    setSelectedNoteId(note.id);
+                    setMobileNotesView("detail");
+                  }}
                   className={`p-3.5 rounded-2xl cursor-pointer transition-all border ${
                     isSelected
                       ? "bg-[#F3F6FD] border-[#DCE6FC] shadow-2xs scale-[1.01]"
@@ -579,8 +585,18 @@ const Notes = ({
       {/* 2. RIGHT COLUMN: Selected Rich Note View                 */}
       {/* ======================================================== */}
       {selectedNote ? (
-        <div className="flex-1 bg-white rounded-[32px] p-7 lg:p-9 shadow-sm border border-neutral-150 h-full overflow-y-auto no-scrollbar flex flex-col justify-between">
+        <div className={`${mobileNotesView === "detail" ? "flex" : "hidden"} lg:flex flex-1 w-full bg-white rounded-[24px] sm:rounded-[32px] p-4 sm:p-7 lg:p-9 shadow-sm border border-neutral-150 h-full overflow-y-auto no-scrollbar flex-col justify-between`}>
           <div>
+            {/* Mobile Back to Notes button */}
+            <button
+              type="button"
+              onClick={() => setMobileNotesView("list")}
+              className="lg:hidden flex items-center gap-1.5 text-xs font-bold text-neutral-600 hover:text-black mb-3 py-1 px-2.5 rounded-xl bg-neutral-100 w-fit cursor-pointer"
+            >
+              <ChevronLeft size={16} />
+              <span>Back to all notes</span>
+            </button>
+
             {/* Top Bar: Title + Star, Share, Trash Buttons */}
             <div className="flex items-start justify-between gap-4 mb-3">
               <input
@@ -1054,7 +1070,15 @@ const Notes = ({
           </div>
         </div>
       ) : (
-        <div className="flex-1 bg-white rounded-[32px] p-8 shadow-sm border border-neutral-100 flex flex-col items-center justify-center text-center">
+        <div className={`${mobileNotesView === "detail" ? "flex" : "hidden"} lg:flex flex-1 w-full bg-white rounded-[24px] sm:rounded-[32px] p-6 sm:p-8 shadow-sm border border-neutral-100 flex-col items-center justify-center text-center`}>
+          <button
+            type="button"
+            onClick={() => setMobileNotesView("list")}
+            className="lg:hidden flex items-center gap-1.5 text-xs font-bold text-neutral-600 hover:text-black mb-4 py-1.5 px-3 rounded-xl bg-neutral-100 w-fit cursor-pointer"
+          >
+            <ChevronLeft size={16} />
+            <span>Back to notes list</span>
+          </button>
           <p className="text-neutral-400 text-sm font-medium">Select a note from the left to view details</p>
         </div>
       )}

@@ -14,7 +14,7 @@ import AuthModal from "../components/auth/AuthModal";
 import Notes from "./Notes";
 import Settings from "./Settings";
 import { INITIAL_TASKS } from "../data/initialTasks";
-import { Bot, Info, Plus } from "lucide-react";
+import { Bot, Info, Plus, Menu, Check, Flame } from "lucide-react";
 import { playVictoryChime } from "../utils/audio";
 
 const LOCAL_STORAGE_KEY = "ravi_taskly_tasks_v3";
@@ -83,6 +83,9 @@ const Homepage = () => {
 
   // Active navigation tab
   const [activeTab, setActiveTab] = useState("home"); // 'home' | 'my-tasks' | 'calendar' | 'notes' | 'analytics' | 'settings'
+
+  // Mobile drawer open state
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   // Modals
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -521,22 +524,66 @@ const Homepage = () => {
   });
 
   return (
-    <div className="min-h-screen w-full bg-[#F5F3ED] text-[#1E2022] flex flex-row overflow-x-auto">
-      {/* 1. Left Sidebar (Taskly) with Live Timer Pill */}
+    <div className="min-h-screen w-full bg-[#F5F3ED] text-[#1E2022] flex flex-col lg:flex-row overflow-x-hidden lg:overflow-x-auto">
+      {/* 1. Left Sidebar (Taskly) with Live Timer Pill (Hidden on mobile, drawer when isMobileOpen) */}
       <Sidebar
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         onOpenSynopsis={() => setIsSynopsisOpen(true)}
         onOpenChatbot={() => setIsChatbotOpen(true)}
         focusTimer={focusTimer}
+        isMobileOpen={isMobileSidebarOpen}
+        onCloseMobile={() => setIsMobileSidebarOpen(false)}
       />
 
-      {/* 2. Main Work Area */}
+      {/* 2. Mobile Top Navigation Header (< lg screens) */}
+      <header className="lg:hidden flex items-center justify-between px-4 py-3 bg-[#F5F3ED] border-b border-[#EAE5DC]/80 sticky top-0 z-30 shrink-0">
+        <div className="flex items-center gap-2.5">
+          <button
+            type="button"
+            onClick={() => setIsMobileSidebarOpen(true)}
+            className="p-1.5 -ml-1 text-neutral-800 hover:bg-neutral-200/60 rounded-xl transition-colors cursor-pointer"
+            aria-label="Open navigation menu"
+          >
+            <Menu size={22} />
+          </button>
+          <div className="flex items-center gap-2">
+            <div className="w-7 h-7 rounded-xl bg-neutral-900 text-white flex items-center justify-center font-black text-xs shadow-xs">
+              T
+            </div>
+            <span className="font-black text-base tracking-tight text-neutral-900">Taskly</span>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2">
+          {focusTimer?.isRunning && (
+            <div
+              onClick={() => setActiveTab("analytics")}
+              className="px-2.5 py-1 rounded-full bg-neutral-900 text-amber-300 flex items-center gap-1.5 cursor-pointer text-xs font-bold font-mono shadow-2xs"
+            >
+              <Flame size={12} className="text-amber-400" />
+              <span>{Math.floor(focusTimer.timeLeft / 60)}m</span>
+            </div>
+          )}
+          <button
+            type="button"
+            onClick={() => setIsCreateModalOpen(true)}
+            className="p-2 rounded-xl bg-neutral-900 text-white hover:bg-black transition-colors cursor-pointer shadow-2xs flex items-center gap-1 text-xs font-bold"
+            title="Create Task"
+          >
+            <Plus size={16} />
+            <span className="hidden sm:inline">Add Task</span>
+          </button>
+        </div>
+      </header>
+
+      {/* 3. Main Work Area */}
       {activeTab === "home" ? (
-        // EXACT SCREENSHOT 3-COLUMN VIEW: Sidebar + Center Line Stack (Active pending tasks) + Right Task Detail Panel
-        <div className="flex-1 min-w-[700px] flex flex-row items-center justify-between p-3 lg:p-6 gap-6 h-screen overflow-hidden">
+        // EXACT SCREENSHOT 3-COLUMN VIEW ON LAPTOP: Sidebar + Center Line Stack (Active pending tasks) + Right Task Detail Panel
+        // BEAUTIFUL RESPONSIVE COMPACT VIEW ON MOBILE: Stacked with scaled 3D icons, compact pills, detail card below
+        <div className="flex-1 w-full min-w-0 lg:min-w-[700px] flex flex-col lg:flex-row items-center justify-start lg:justify-between p-3 sm:p-4 lg:p-6 gap-6 min-h-[calc(100vh-57px)] lg:h-screen overflow-y-auto lg:overflow-hidden">
           {/* Center 3D Stack (Active Pending Tasks - completed tasks are removed) */}
-          <div className="flex-1 flex flex-col justify-between items-center h-full overflow-y-auto no-scrollbar">
+          <div className="w-full lg:flex-1 flex flex-col justify-between items-center min-h-[380px] lg:h-full shrink-0 lg:overflow-y-auto no-scrollbar">
             <TaskStackCanvas
               tasks={activeHomeTasks}
               selectedTaskId={selectedTaskId}
@@ -547,17 +594,22 @@ const Homepage = () => {
           </div>
 
           {/* Right Task Detail Card */}
-          <div className="w-[370px] lg:w-[390px] shrink-0 h-full py-4 pr-3 flex flex-col justify-center overflow-y-auto no-scrollbar">
+          <div className="w-full max-w-md lg:max-w-none lg:w-[370px] xl:w-[390px] shrink-0 pb-10 lg:pb-0 lg:h-full lg:py-4 lg:pr-3 flex flex-col justify-center">
             <TaskDetailCard
               task={selectedTask}
               onDeleteTask={handleDeleteTask}
               onToggleStatus={handleToggleTaskStatus}
+              onEditTask={(task) => setEditingTask(task)}
+              onStartFocusTimer={(task) => {
+                handleSelectTimerTask(task.id);
+                handleStartTimer(task.id);
+              }}
             />
           </div>
         </div>
       ) : activeTab === "my-tasks" ? (
         // "My Tasks" View with In-place Edit and Filters
-        <div className="flex-1 p-8 max-w-6xl mx-auto overflow-y-auto h-screen">
+        <div className="flex-1 p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto overflow-y-auto min-h-[calc(100vh-57px)] lg:h-screen">
           <div className="flex items-center justify-between mb-6">
             <div>
               <h1 className="text-2xl font-black text-neutral-900 tracking-tight">
@@ -638,7 +690,7 @@ const Homepage = () => {
         />
       ) : (
         // Glassmorphic Analytics & Overview with persistent focus timer and priority breakdown
-        <div className="flex-1 p-8 max-w-6xl mx-auto overflow-y-auto h-screen">
+        <div className="flex-1 p-4 sm:p-6 lg:p-8 max-w-6xl mx-auto overflow-y-auto min-h-[calc(100vh-57px)] lg:h-screen">
           <div className="flex items-center justify-between mb-6">
             <div>
               <h1 className="text-2xl font-black text-neutral-900 tracking-tight">

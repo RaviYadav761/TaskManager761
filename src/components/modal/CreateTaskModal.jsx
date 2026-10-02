@@ -315,7 +315,7 @@ const CreateTaskModal = ({ isOpen, onClose, onAddTask }) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs animate-in fade-in duration-200">
-      <div className="bg-white rounded-[32px] w-full max-w-md shadow-2xl p-7 text-neutral-900 relative max-h-[92vh] overflow-y-auto no-scrollbar border border-neutral-100">
+      <div className="bg-white rounded-[24px] sm:rounded-[32px] w-full max-w-md shadow-2xl p-5 sm:p-7 text-neutral-900 relative max-h-[92vh] overflow-y-auto no-scrollbar border border-neutral-100">
         {/* Header */}
         <div className="flex items-center justify-between mb-5">
           <h2 className="text-2xl font-black text-neutral-900 tracking-tight">

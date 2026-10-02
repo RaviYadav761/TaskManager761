@@ -119,7 +119,7 @@ const EditTaskModal = ({ isOpen, onClose, task, onUpdateTask }) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-neutral-900/50 backdrop-blur-sm animate-in fade-in">
-      <div className="relative w-full max-w-xl max-h-[90vh] bg-white rounded-[32px] p-6 sm:p-8 shadow-2xl border border-neutral-100 flex flex-col overflow-hidden">
+      <div className="relative w-full max-w-xl max-h-[92vh] bg-white rounded-[24px] sm:rounded-[32px] p-5 sm:p-8 shadow-2xl border border-neutral-100 flex flex-col overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between pb-4 border-b border-neutral-150">
           <div>

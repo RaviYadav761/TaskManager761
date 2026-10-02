@@ -65,34 +65,34 @@ const TaskStackCanvas = ({
   };
 
   return (
-    <div className="flex-1 flex flex-col justify-between items-center px-4 py-6 relative h-full min-h-screen">
+    <div className="w-full flex-1 flex flex-col justify-between items-center px-2 sm:px-4 py-3 sm:py-6 relative min-h-0 lg:h-full">
       {/* Top spacing */}
       <div />
 
-      {/* Center Tasks - Arranged in a clean horizontal LINE ("line se show ho") */}
-      <div className="w-full flex flex-col items-center my-auto py-4">
+      {/* Center Tasks - Arranged in a clean horizontal LINE ("line se show ho"), compact on mobile, exact on desktop */}
+      <div className="w-full flex flex-col items-center my-auto py-2 sm:py-4">
         {tasks.length === 0 ? (
-          <div className="flex flex-col items-center justify-center text-center p-8 max-w-md animate-in fade-in">
-            <div className="w-20 h-20 rounded-3xl bg-white shadow-md border border-neutral-150 flex items-center justify-center mb-4 text-neutral-400">
-              <Plus size={36} className="text-neutral-400" />
+          <div className="flex flex-col items-center justify-center text-center p-6 sm:p-8 max-w-md animate-in fade-in">
+            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl sm:rounded-3xl bg-white shadow-md border border-neutral-150 flex items-center justify-center mb-3 text-neutral-400">
+              <Plus size={30} className="text-neutral-400" />
             </div>
-            <h3 className="text-xl font-black text-neutral-900 mb-1 tracking-tight">
+            <h3 className="text-lg sm:text-xl font-black text-neutral-900 mb-1 tracking-tight">
               No tasks in your workspace yet
             </h3>
-            <p className="text-xs text-neutral-500 mb-6 font-medium">
+            <p className="text-xs text-neutral-500 mb-4 sm:mb-6 font-medium">
               Your workspace is completely clean. Type a task title below or click "+ Create Task" to start building your stack.
             </p>
             <button
               type="button"
               onClick={onOpenCreateModal}
-              className="px-6 py-3 bg-neutral-900 hover:bg-black text-white rounded-full text-xs font-bold flex items-center gap-2 shadow-sm transition-all cursor-pointer hover:scale-105"
+              className="px-5 py-2.5 sm:px-6 sm:py-3 bg-neutral-900 hover:bg-black text-white rounded-full text-xs font-bold flex items-center gap-2 shadow-sm transition-all cursor-pointer hover:scale-105"
             >
-              <Plus size={16} />
+              <Plus size={15} />
               <span>Create Your First Task</span>
             </button>
           </div>
         ) : (
-          <div className="flex flex-row items-end justify-center gap-7 sm:gap-9 flex-wrap max-w-full px-4 py-2">
+          <div className="flex flex-row items-end justify-center gap-3.5 sm:gap-6 lg:gap-8 flex-wrap max-w-full px-2 py-2">
             {tasks.map((task) => {
               const isSelected = selectedTaskId === task.id;
               return (
@@ -101,11 +101,11 @@ const TaskStackCanvas = ({
                   onClick={() => onSelectTask(task.id)}
                   className="flex flex-col items-center cursor-pointer group transition-all duration-300 select-none shrink-0"
                 >
-                  {/* 3D Model / Image */}
+                  {/* 3D Model / Image - Scaled compact on mobile, full size on desktop */}
                   <div
-                    className={`w-32 h-32 sm:w-40 sm:h-40 transition-all duration-300 group-hover:scale-105 flex items-center justify-center ${
+                    className={`w-20 h-20 sm:w-28 sm:h-28 lg:w-36 lg:h-36 transition-all duration-300 group-hover:scale-105 flex items-center justify-center ${
                       isSelected
-                        ? "scale-105 drop-shadow-xl -translate-y-1.5"
+                        ? "scale-105 drop-shadow-xl -translate-y-1"
                         : "opacity-90 hover:opacity-100 drop-shadow-md"
                     }`}
                   >
@@ -116,9 +116,9 @@ const TaskStackCanvas = ({
                     />
                   </div>
 
-                  {/* Pill Button Label */}
+                  {/* Pill Button Label - Compact on mobile */}
                   <div
-                    className={`mt-2 px-7 py-2.5 rounded-full font-bold text-sm tracking-tight transition-all duration-200 shadow-md ${
+                    className={`mt-1.5 px-4 py-1.5 sm:px-6 sm:py-2 lg:px-7 lg:py-2.5 rounded-full font-bold text-xs sm:text-sm tracking-tight transition-all duration-200 shadow-md ${
                       isSelected
                         ? "bg-white text-neutral-900 ring-2 ring-neutral-900 shadow-lg scale-105"
                         : "bg-white text-neutral-900 hover:bg-neutral-50 hover:shadow-lg"
@@ -133,20 +133,20 @@ const TaskStackCanvas = ({
         )}
       </div>
 
-      {/* Bottom Floating Task Creation Capsule Bar */}
-      <div className="w-full max-w-xl pb-4">
+      {/* Bottom Floating Task Creation Capsule Bar - Compact on mobile */}
+      <div className="w-full max-w-xs sm:max-w-md lg:max-w-xl pb-3 sm:pb-4">
         <form
           onSubmit={handleQuickSubmit}
-          className="bg-white rounded-full p-2 pl-2.5 pr-2.5 shadow-xl shadow-neutral-900/4 border border-white/90 flex items-center gap-3 transition-shadow hover:shadow-2xl"
+          className="bg-white rounded-full p-1.5 sm:p-2 pl-2 pr-2 sm:pl-2.5 sm:pr-2.5 shadow-xl shadow-neutral-900/4 border border-white/90 flex items-center gap-2 sm:gap-3 transition-shadow hover:shadow-2xl"
         >
-          {/* Plus Button - Opens Image 2 Create Task Modal */}
+          {/* Plus Button */}
           <button
             type="button"
             onClick={onOpenCreateModal}
-            className="w-11 h-11 rounded-full bg-[#1C1D1F] hover:bg-black text-white flex items-center justify-center shrink-0 transition-all cursor-pointer hover:scale-105"
+            className="w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-[#1C1D1F] hover:bg-black text-white flex items-center justify-center shrink-0 transition-all cursor-pointer hover:scale-105"
             title="Create Task with Image, Date, Time, Goal, Notes"
           >
-            <Plus size={20} strokeWidth={2.5} />
+            <Plus size={16} strokeWidth={2.5} className="sm:w-5 sm:h-5" />
           </button>
 
           {/* Quick Input Text */}
@@ -155,16 +155,16 @@ const TaskStackCanvas = ({
             value={inputText}
             onChange={(e) => setInputText(e.target.value)}
             placeholder="Create your task stack..."
-            className="flex-1 bg-transparent text-sm text-neutral-900 placeholder:text-neutral-400 outline-none px-2 font-medium"
+            className="flex-1 bg-transparent text-xs sm:text-sm text-neutral-900 placeholder:text-neutral-400 outline-none px-1.5 sm:px-2 font-medium"
           />
 
           {/* Submit Arrow Button */}
           <button
             type="submit"
-            className="w-11 h-11 rounded-full bg-[#1C1D1F] hover:bg-black text-white flex items-center justify-center shrink-0 transition-all cursor-pointer hover:scale-105"
+            className="w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-[#1C1D1F] hover:bg-black text-white flex items-center justify-center shrink-0 transition-all cursor-pointer hover:scale-105"
             title="Submit Task"
           >
-            <ArrowRight size={20} strokeWidth={2.5} />
+            <ArrowRight size={16} strokeWidth={2.5} className="sm:w-5 sm:h-5" />
           </button>
         </form>
       </div>

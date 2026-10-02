@@ -82,7 +82,7 @@ const AuthModal = ({ isOpen, onLogin, onSignUp, onContinueDemo }) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-neutral-900/60 backdrop-blur-md animate-in fade-in">
-      <div className="relative w-full max-w-md bg-white rounded-[32px] p-8 shadow-2xl border border-neutral-150 overflow-hidden">
+      <div className="relative w-full max-w-md bg-white rounded-[24px] sm:rounded-[32px] p-6 sm:p-8 shadow-2xl border border-neutral-150 max-h-[92vh] overflow-y-auto no-scrollbar">
         {/* Brand Header */}
         <div className="text-center mb-6 relative">
           <div className="w-12 h-12 rounded-2xl bg-neutral-900 text-white mx-auto flex items-center justify-center shadow-md mb-3">

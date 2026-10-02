@@ -195,14 +195,14 @@ const CalendarView = ({
   };
 
   return (
-    <div className="flex-1 min-w-[760px] h-screen flex flex-col justify-between p-4 lg:p-6 bg-[#F5F3ED] overflow-y-auto no-scrollbar select-none">
+    <div className="flex-1 w-full min-w-0 lg:min-w-[760px] min-h-[calc(100vh-57px)] lg:h-screen flex flex-col justify-between p-3 sm:p-4 lg:p-6 bg-[#F5F3ED] overflow-y-auto no-scrollbar select-none">
       {/* Top spacing */}
       <div />
 
-      {/* Main Center Area: Two Side-by-Side Cards matching screenshot */}
-      <div className="flex flex-row items-stretch justify-center gap-6 w-full max-w-5xl mx-auto my-auto py-2">
+      {/* Main Center Area: Two Side-by-Side Cards on desktop, stacked on mobile */}
+      <div className="flex flex-col lg:flex-row items-center lg:items-stretch justify-center gap-6 w-full max-w-5xl mx-auto my-auto py-2">
         {/* LEFT CARD: Calendar View */}
-        <div className="flex-1 bg-white rounded-[32px] p-6 lg:p-8 shadow-xl shadow-neutral-900/4 border border-white/80 flex flex-col justify-between min-h-[500px]">
+        <div className="w-full lg:flex-1 bg-white rounded-[24px] sm:rounded-[32px] p-4 sm:p-6 lg:p-8 shadow-xl shadow-neutral-900/4 border border-white/80 flex flex-col justify-between min-h-[460px] lg:min-h-[500px]">
           <div>
             {/* Header: < Month Year > */}
             <div className="flex items-center justify-between mb-6">
@@ -298,7 +298,7 @@ const CalendarView = ({
         </div>
 
         {/* RIGHT CARD: Selected Day Tasks Notebook/Planner Card */}
-        <div className="w-[360px] lg:w-[390px] bg-white rounded-[32px] p-6 lg:p-7 shadow-xl shadow-neutral-900/4 border border-white/80 flex flex-col justify-between min-h-[500px]">
+        <div className="w-full max-w-md lg:max-w-none lg:w-[360px] xl:w-[390px] bg-white rounded-[24px] sm:rounded-[32px] p-5 sm:p-6 lg:p-7 shadow-xl shadow-neutral-900/4 border border-white/80 flex flex-col justify-between min-h-[460px] lg:min-h-[500px]">
           <div>
             {/* Header: Date Number + Day & Month/Year + Plus Button */}
             <div className="flex items-center justify-between mb-6 pb-4 border-b border-neutral-100">
@@ -427,19 +427,19 @@ const CalendarView = ({
       </div>
 
       {/* Bottom Floating Task Creation Capsule Bar matching exact design */}
-      <div className="w-full max-w-xl mx-auto pb-2">
+      <div className="w-full max-w-xs sm:max-w-md lg:max-w-xl mx-auto pb-2">
         <form
           onSubmit={handleQuickSubmit}
-          className="bg-white rounded-full p-2 pl-2.5 pr-2.5 shadow-xl shadow-neutral-900/4 border border-white/90 flex items-center gap-3 transition-shadow hover:shadow-2xl"
+          className="bg-white rounded-full p-1.5 sm:p-2 pl-2 pr-2 sm:pl-2.5 sm:pr-2.5 shadow-xl shadow-neutral-900/4 border border-white/90 flex items-center gap-2 sm:gap-3 transition-shadow hover:shadow-2xl"
         >
           {/* Plus Button - Opens Create Task Modal */}
           <button
             type="button"
             onClick={onOpenCreateModal}
-            className="w-11 h-11 rounded-full bg-[#1C1D1F] hover:bg-black text-white flex items-center justify-center shrink-0 transition-all cursor-pointer hover:scale-105"
+            className="w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-[#1C1D1F] hover:bg-black text-white flex items-center justify-center shrink-0 transition-all cursor-pointer hover:scale-105"
             title="Create Task"
           >
-            <Plus size={20} strokeWidth={2.5} />
+            <Plus size={16} strokeWidth={2.5} className="sm:w-5 sm:h-5" />
           </button>
 
           {/* Quick Input Text */}
@@ -448,16 +448,16 @@ const CalendarView = ({
             value={quickInput}
             onChange={(e) => setQuickInput(e.target.value)}
             placeholder="Create your task stack..."
-            className="flex-1 bg-transparent text-sm text-neutral-900 placeholder:text-neutral-400 outline-none px-2 font-medium"
+            className="flex-1 bg-transparent text-xs sm:text-sm text-neutral-900 placeholder:text-neutral-400 outline-none px-1.5 sm:px-2 font-medium"
           />
 
           {/* Submit Arrow Button */}
           <button
             type="submit"
-            className="w-11 h-11 rounded-full bg-[#1C1D1F] hover:bg-black text-white flex items-center justify-center shrink-0 transition-all cursor-pointer hover:scale-105"
+            className="w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-[#1C1D1F] hover:bg-black text-white flex items-center justify-center shrink-0 transition-all cursor-pointer hover:scale-105"
             title="Submit Task"
           >
-            <ArrowRight size={20} strokeWidth={2.5} />
+            <ArrowRight size={16} strokeWidth={2.5} className="sm:w-5 sm:h-5" />
           </button>
         </form>
       </div>

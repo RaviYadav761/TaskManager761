@@ -7,7 +7,8 @@ import {
   BarChart2,
   Settings,
   Bot,
-  Flame
+  Flame,
+  X
 } from "lucide-react";
 import SidebarLogo from "./SidebarLogo";
 import SidebarItem from "./SidebarItem";
@@ -19,6 +20,8 @@ const Sidebar = ({
   onOpenSynopsis,
   onOpenChatbot,
   focusTimer,
+  isMobileOpen = false,
+  onCloseMobile,
 }) => {
   const navItems = [
     { id: "home", label: "Home", icon: Home },
@@ -38,11 +41,27 @@ const Sidebar = ({
     return `${pad(mins)}:${pad(secs)}`;
   };
 
-  return (
-    <aside className="w-56 min-w-[220px] max-w-[240px] h-screen sticky top-0 p-5 flex flex-col justify-between select-none shrink-0 bg-[#F5F3ED]">
+  const handleNavClick = (tabId) => {
+    setActiveTab(tabId);
+    if (onCloseMobile) onCloseMobile();
+  };
+
+  const sidebarContent = (
+    <>
       <div>
-        {/* Brand Logo */}
-        <SidebarLogo />
+        {/* Brand Logo & Close button on mobile */}
+        <div className="flex items-center justify-between">
+          <SidebarLogo />
+          {onCloseMobile && (
+            <button
+              onClick={onCloseMobile}
+              className="lg:hidden p-2 text-neutral-500 hover:text-black rounded-xl hover:bg-neutral-200/50 transition-colors"
+              title="Close menu"
+            >
+              <X size={20} />
+            </button>
+          )}
+        </div>
 
         {/* Navigation Menu */}
         <nav className="space-y-1.5 mt-2">
@@ -52,14 +71,14 @@ const Sidebar = ({
               icon={item.icon}
               label={item.label}
               active={activeTab === item.id}
-              onClick={() => setActiveTab(item.id)}
+              onClick={() => handleNavClick(item.id)}
             />
           ))}
 
           {/* Active Global Focus Timer Pill */}
           {focusTimer?.isRunning && (
             <div
-              onClick={() => setActiveTab("analytics")}
+              onClick={() => handleNavClick("analytics")}
               className="mt-3 mx-1 p-2.5 rounded-2xl bg-neutral-900 text-white flex items-center justify-between cursor-pointer hover:bg-black transition-all shadow-md group animate-pulse"
               title="Focus session in progress. Click to view timer."
             >
@@ -81,7 +100,7 @@ const Sidebar = ({
             icon={Settings}
             label="Settings"
             active={activeTab === "settings"}
-            onClick={() => setActiveTab("settings")}
+            onClick={() => handleNavClick("settings")}
           />
 
           {/* Smart Assistant Quick Item */}
@@ -89,7 +108,10 @@ const Sidebar = ({
             icon={Bot}
             label="TaskBot AI"
             active={false}
-            onClick={onOpenChatbot}
+            onClick={() => {
+              onOpenChatbot();
+              if (onCloseMobile) onCloseMobile();
+            }}
           />
         </nav>
       </div>
@@ -97,11 +119,39 @@ const Sidebar = ({
       {/* Bottom Profile Section */}
       <div className="pt-4">
         <SidebarProfile
-          onOpenSynopsis={onOpenSynopsis}
-          onOpenSettings={() => setActiveTab("settings")}
+          onOpenSynopsis={() => {
+            onOpenSynopsis();
+            if (onCloseMobile) onCloseMobile();
+          }}
+          onOpenSettings={() => handleNavClick("settings")}
         />
       </div>
-    </aside>
+    </>
+  );
+
+  return (
+    <>
+      {/* 1. Desktop Sidebar - EXACT and UNTOUCHED on laptop (lg:flex) */}
+      <aside className="hidden lg:flex w-56 min-w-[220px] max-w-[240px] h-screen sticky top-0 p-5 flex-col justify-between select-none shrink-0 bg-[#F5F3ED] border-r border-[#EAE5DC]/60">
+        {sidebarContent}
+      </aside>
+
+      {/* 2. Mobile Drawer Sidebar - only when open on mobile */}
+      {isMobileOpen && (
+        <div className="fixed inset-0 z-50 lg:hidden flex">
+          {/* Backdrop */}
+          <div
+            onClick={onCloseMobile}
+            className="fixed inset-0 bg-black/40 backdrop-blur-xs transition-opacity"
+          />
+
+          {/* Drawer content */}
+          <aside className="relative w-64 max-w-[80vw] h-full bg-[#F5F3ED] p-5 flex flex-col justify-between shadow-2xl z-10 animate-in slide-in-from-left duration-200">
+            {sidebarContent}
+          </aside>
+        </div>
+      )}
+    </>
   );
 };
 
