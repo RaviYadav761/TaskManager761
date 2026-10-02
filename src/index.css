@@ -1,0 +1,152 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    transition: background-color 0.25s ease, color 0.25s ease;
+  }
+}
+
+/* Custom scrollbar for clean UI */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #D8D4CA;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #BFBAB0;
+}
+
+/* ========================================================= */
+/* THEMES: Normal (Default), Dark, Light                      */
+/* ========================================================= */
+
+/* 1. Normal (Taskly signature warm cream default) */
+body, body.theme-normal {
+  background-color: #F5F3ED !important;
+  color: #1E2022 !important;
+}
+
+/* 2. Dark Theme - High Contrast & Crystal Clear Text Across All Pages */
+body.theme-dark {
+  background-color: #0E0F14 !important;
+  color: #F8FAFC !important;
+}
+
+/* Outer layout backgrounds */
+body.theme-dark .bg-\[\#F5F3ED\],
+body.theme-dark aside,
+body.theme-dark aside.bg-\[\#F5F3ED\],
+body.theme-dark .bg-\[\#FAF9F6\],
+body.theme-dark .bg-\[\#FAF8F5\],
+body.theme-dark .bg-neutral-50,
+body.theme-dark .bg-neutral-100 {
+  background-color: #15161E !important;
+  border-color: #262937 !important;
+}
+
+/* Solid white cards */
+body.theme-dark .bg-white:not([class*="bg-white/"]) {
+  background-color: #1C1E28 !important;
+  border-color: #2D3142 !important;
+  color: #F8FAFC !important;
+}
+
+/* Glassmorphic translucent cards in dark mode */
+body.theme-dark .backdrop-blur-xl,
+body.theme-dark .backdrop-blur-2xl {
+  background-color: rgba(25, 27, 37, 0.75) !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  color: #F8FAFC !important;
+}
+
+/* High contrast text hierarchy */
+body.theme-dark .text-neutral-900,
+body.theme-dark .text-neutral-800,
+body.theme-dark .text-neutral-700,
+body.theme-dark .text-\[\#1E2022\],
+body.theme-dark .text-\[\#1C1D1F\],
+body.theme-dark .text-black,
+body.theme-dark h1,
+body.theme-dark h2,
+body.theme-dark h3,
+body.theme-dark h4 {
+  color: #FFFFFF !important;
+}
+
+body.theme-dark .text-neutral-600,
+body.theme-dark .text-neutral-500,
+body.theme-dark .text-neutral-400,
+body.theme-dark p {
+  color: #CBD5E1 !important;
+}
+
+/* Dark mode borders */
+body.theme-dark .border-neutral-200,
+body.theme-dark .border-neutral-150,
+body.theme-dark .border-neutral-100,
+body.theme-dark .border-\[\#E2DDD3\],
+body.theme-dark .border-\[\#E5E0D6\],
+body.theme-dark .border-\[\#F0ECE4\],
+body.theme-dark .border {
+  border-color: #2C2F3E !important;
+}
+
+body.theme-dark .bg-\[\#EDE9E1\] {
+  background-color: #222533 !important;
+}
+
+/* Dark mode inputs, textareas, selects */
+body.theme-dark input,
+body.theme-dark textarea,
+body.theme-dark select {
+  background-color: #222534 !important;
+  color: #FFFFFF !important;
+  border-color: #3B4055 !important;
+}
+
+body.theme-dark input::placeholder,
+body.theme-dark textarea::placeholder {
+  color: #94A3B8 !important;
+}
+
+body.theme-dark option {
+  background-color: #1C1E28 !important;
+  color: #FFFFFF !important;
+}
+
+/* Dark mode primary buttons */
+body.theme-dark .bg-neutral-900,
+body.theme-dark .bg-\[\#1C1D1F\] {
+  background-color: #2C3042 !important;
+  border: 1px solid #454B64 !important;
+  color: #FFFFFF !important;
+}
+
+body.theme-dark .bg-neutral-900:hover,
+body.theme-dark .bg-\[\#1C1D1F\]:hover {
+  background-color: #383D54 !important;
+}
+
+/* 3. Light Theme */
+body.theme-light {
+  background-color: #F8FAFC !important;
+  color: #0F172A !important;
+}
+
+body.theme-light .bg-\[\#F5F3ED\],
+body.theme-light aside.bg-\[\#F5F3ED\] {
+  background-color: #FFFFFF !important;
+  border-color: #E2E8F0 !important;
+}
+
+body.theme-light .bg-white {
+  background-color: #FFFFFF !important;
+  border-color: #E2E8F0 !important;
+}
