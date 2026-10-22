@@ -3,7 +3,7 @@
 ## APK download karne ke steps
 1. Repository ke **Actions** tab par jao: https://github.com/RaviYadav761/TaskManager761/actions
 2. **Build Taskly Android APK** workflow select karo.
-3. **Run workflow** par click karo aur branch `main) select karke run karo.
+3. **Run workflow** par click karo aur branch `main` select karke run karo.
 4. Workflow complete hone ka wait karo. Green tick aane par run open karo.
 5. Neeche **Artifacts** section se `taskly-debug-apk` download karo.
 6. Downloaded ZIP extract karo. Uske andar `app-debug.apk` milega.
