@@ -1,8 +1,0 @@
-{
-  "appId": "com.raviyadav761.taskly",
-  "appName": "Taskly",
-  "webDir": "dist",
-  "server": {
-    "androidScheme": "https"
-  }
-}
