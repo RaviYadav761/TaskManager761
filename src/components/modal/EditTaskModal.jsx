@@ -7,18 +7,11 @@ import {
   FileText,
   Plus,
   Trash2,
-  Tag,
   CheckCircle2,
-  Image as ImageIcon
+  Image as ImageIcon,
 } from "lucide-react";
-import { CATEGORIES, PRIORITIES } from "../../data/initialTasks";
-
-const PRESET_IMAGES = [
-  { label: "Dumbbell", src: "/assets/dumbbell.jpg" },
-  { label: "Books", src: "/assets/books.jpg" },
-  { label: "Laptop", src: "/assets/laptop.jpg" },
-  { label: "Shopping", src: "/assets/shopping.jpg" },
-];
+import { CATEGORIES } from "../../data/initialTasks";
+import { PRESET_IMAGES } from "../../data/taskPresets";
 
 const EditTaskModal = ({ isOpen, onClose, task, onUpdateTask }) => {
   const fileInputRef = useRef(null);
@@ -181,7 +174,6 @@ const EditTaskModal = ({ isOpen, onClose, task, onUpdateTask }) => {
 
           {/* Grid: Priority, Category, Status */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            {/* Priority */}
             <div>
               <label className="block text-xs font-bold text-neutral-700 mb-1.5">
                 Priority
@@ -197,7 +189,6 @@ const EditTaskModal = ({ isOpen, onClose, task, onUpdateTask }) => {
               </select>
             </div>
 
-            {/* Category */}
             <div>
               <label className="block text-xs font-bold text-neutral-700 mb-1.5">
                 Category
@@ -215,7 +206,6 @@ const EditTaskModal = ({ isOpen, onClose, task, onUpdateTask }) => {
               </select>
             </div>
 
-            {/* Status */}
             <div>
               <label className="block text-xs font-bold text-neutral-700 mb-1.5">
                 Status
@@ -237,7 +227,6 @@ const EditTaskModal = ({ isOpen, onClose, task, onUpdateTask }) => {
 
           {/* Grid: Date, Time, Repeat */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            {/* Date */}
             <div>
               <label className="block text-xs font-bold text-neutral-700 mb-1.5">
                 Due Date
@@ -261,7 +250,6 @@ const EditTaskModal = ({ isOpen, onClose, task, onUpdateTask }) => {
               </div>
             </div>
 
-            {/* Time */}
             <div>
               <label className="block text-xs font-bold text-neutral-700 mb-1.5">
                 Time Interval
@@ -281,7 +269,6 @@ const EditTaskModal = ({ isOpen, onClose, task, onUpdateTask }) => {
               </div>
             </div>
 
-            {/* Repeat */}
             <div>
               <label className="block text-xs font-bold text-neutral-700 mb-1.5">
                 Repeat

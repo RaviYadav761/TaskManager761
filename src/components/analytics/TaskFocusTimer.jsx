@@ -1,14 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
-  Timer,
   Play,
   Pause,
   RotateCcw,
   CheckCircle2,
-  Sparkles,
   Flame,
   Clock,
-  Target
+  Target,
 } from "lucide-react";
 import { playVictoryChime } from "../../utils/audio";
 

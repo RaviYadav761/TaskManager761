@@ -10,6 +10,7 @@ import {
   Plus,
   Bot
 } from "lucide-react";
+import { getTodayDateInput } from "../../utils/dateUtils";
 
 const DashboardSummary = ({
   tasks = [],
@@ -26,7 +27,7 @@ const DashboardSummary = ({
   onFilterChange,
   onToggleStatus
 }) => {
-  const todayStr = new Date().toISOString().split("T")[0];
+  const todayStr = getTodayDateInput();
 
   const total = tasks.length;
   const completed = tasks.filter((t) => t.status === "Completed").length;

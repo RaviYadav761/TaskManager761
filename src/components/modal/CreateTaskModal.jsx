@@ -1,72 +1,20 @@
 import React, { useState, useRef } from "react";
 import {
   X,
-  Image as ImageIcon,
   Calendar,
   Clock,
   Target,
   FileText,
   Plus,
-  Trash2,
-  List,
   AlignLeft,
-  ChevronDown
+  List,
+  ChevronDown,
 } from "lucide-react";
-
-const PRESET_IMAGES = [
-  {
-    label: "Dumbbell",
-    src: "/assets/dumbbell.jpg",
-    defaultName: "Gym Workout",
-    defaultGoal: "Stay fit and healthy",
-    defaultHeader: "Full body workout",
-    defaultPoints: [
-      "10 min warm up",
-      "30 min strength training",
-      "10 min cardio",
-      "10 min cool down",
-    ],
-  },
-  {
-    label: "Books",
-    src: "/assets/books.jpg",
-    defaultName: "Reading Book",
-    defaultGoal: "Expand knowledge & mindfulness",
-    defaultHeader: "Evening reading session",
-    defaultPoints: [
-      "Read chapters 4 & 5",
-      "Highlight key concepts",
-      "Reflect on core takeaways",
-    ],
-  },
-  {
-    label: "Laptop",
-    src: "/assets/laptop.jpg",
-    defaultName: "Product Development",
-    defaultGoal: "Review Sprint Goals & Architecture",
-    defaultHeader: "Project review",
-    defaultPoints: [
-      "Verify Taskly UI matching modern standards",
-      "Review smart chatbot responses",
-      "Check interactive canvas and workflow",
-    ],
-  },
-  {
-    label: "Shopping",
-    src: "/assets/shopping.jpg",
-    defaultName: "Grocery Shopping",
-    defaultGoal: "Purchase weekly essentials",
-    defaultHeader: "Shopping list",
-    defaultPoints: [
-      "Organic fruits & protein shakes",
-      "Notebooks & stationery supplies",
-      "Review list before checkout",
-    ],
-  },
-];
+import ImagePicker from "./ImagePicker";
+import { formatTime12h, getTodayDateInput } from "../../utils/dateUtils";
 
 const CreateTaskModal = ({ isOpen, onClose, onAddTask }) => {
-  const todayISO = new Date().toISOString().split("T")[0];
+  const todayISO = getTodayDateInput();
 
   const [taskName, setTaskName] = useState("");
   const [selectedImage, setSelectedImage] = useState("/assets/dumbbell.jpg");
@@ -97,46 +45,16 @@ const CreateTaskModal = ({ isOpen, onClose, onAddTask }) => {
   const [notesText, setNotesText] = useState("");
 
   // Element refs for triggering pickers
-  const fileInputRef = useRef(null);
   const dateInputRef = useRef(null);
   const startTimeInputRef = useRef(null);
   const endTimeInputRef = useRef(null);
 
   if (!isOpen) return null;
 
-  // Convert 24-hr (HH:mm) to 12-hr format (e.g., "6:00 PM")
-  const formatTime12h = (time24) => {
-    if (!time24) return "--:-- --";
-    const [hStr, mStr] = time24.split(":");
-    let h = parseInt(hStr, 10);
-    const m = mStr || "00";
-    const ampm = h >= 12 ? "PM" : "AM";
-    h = h % 12;
-    h = h ? h : 12;
-    return `${h}:${m} ${ampm}`;
-  };
-
-  const handleFileUpload = (e) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        if (event.target?.result) {
-          setSelectedImage(event.target.result);
-        }
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
   const handlePresetSelect = (preset) => {
     setSelectedImage(preset.src);
-    if (!taskName) {
-      setTaskName(preset.defaultName);
-    }
-    if (!goal) {
-      setGoal(preset.defaultGoal);
-    }
+    if (!taskName) setTaskName(preset.defaultName);
+    if (!goal) setGoal(preset.defaultGoal);
     if (notesHeader === "Full body workout" || !notesHeader) {
       setNotesHeader(preset.defaultHeader);
     }
@@ -153,7 +71,7 @@ const CreateTaskModal = ({ isOpen, onClose, onAddTask }) => {
       return;
     }
 
-    const todayStr = new Date().toISOString().split("T")[0];
+    const todayStr = getTodayDateInput();
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
     const tomorrowStr = tomorrow.toISOString().split("T")[0];
@@ -168,44 +86,16 @@ const CreateTaskModal = ({ isOpen, onClose, onAddTask }) => {
     }
   };
 
-  const handleOpenDatePicker = () => {
-    if (dateInputRef.current) {
+  const handleOpenPicker = (inputRef) => {
+    if (inputRef.current) {
       try {
-        if (typeof dateInputRef.current.showPicker === "function") {
-          dateInputRef.current.showPicker();
+        if (typeof inputRef.current.showPicker === "function") {
+          inputRef.current.showPicker();
         } else {
-          dateInputRef.current.focus();
+          inputRef.current.focus();
         }
       } catch {
-        dateInputRef.current.focus();
-      }
-    }
-  };
-
-  const handleOpenStartTime = () => {
-    if (startTimeInputRef.current) {
-      try {
-        if (typeof startTimeInputRef.current.showPicker === "function") {
-          startTimeInputRef.current.showPicker();
-        } else {
-          startTimeInputRef.current.focus();
-        }
-      } catch {
-        startTimeInputRef.current.focus();
-      }
-    }
-  };
-
-  const handleOpenEndTime = () => {
-    if (endTimeInputRef.current) {
-      try {
-        if (typeof endTimeInputRef.current.showPicker === "function") {
-          endTimeInputRef.current.showPicker();
-        } else {
-          endTimeInputRef.current.focus();
-        }
-      } catch {
-        endTimeInputRef.current.focus();
+        inputRef.current.focus();
       }
     }
   };
@@ -228,7 +118,7 @@ const CreateTaskModal = ({ isOpen, onClose, onAddTask }) => {
     const name = taskName.trim() || "New Task";
 
     let finalNotes = "";
-    let finalHeader = notesHeader.trim();
+    const finalHeader = notesHeader.trim();
     let finalBulletPoints = [];
 
     if (notesMode === "points") {
@@ -239,15 +129,12 @@ const CreateTaskModal = ({ isOpen, onClose, onAddTask }) => {
       if (finalBulletPoints.length === 0 && finalHeader) {
         finalBulletPoints = [finalHeader];
       }
-
       finalNotes = finalBulletPoints.join("\n");
     } else {
-      // Text mode
       finalNotes = notesText.trim();
       finalBulletPoints = [];
     }
 
-    // Format time range string: e.g. "6:00 PM – 7:00 PM"
     const startFormatted = formatTime12h(startTime);
     const endFormatted = formatTime12h(endTime);
     let timeString = "6:00 PM – 7:00 PM";
@@ -257,30 +144,31 @@ const CreateTaskModal = ({ isOpen, onClose, onAddTask }) => {
       timeString = startFormatted;
     }
 
-    // Category detection
+    // Dynamic category detection
     let category = "Personal";
+    const lowerName = name.toLowerCase();
     if (
       selectedImage.includes("dumbbell") ||
-      name.toLowerCase().includes("gym") ||
-      name.toLowerCase().includes("workout")
+      lowerName.includes("gym") ||
+      lowerName.includes("workout")
     ) {
       category = "Health & Fitness";
     } else if (
       selectedImage.includes("books") ||
-      name.toLowerCase().includes("read") ||
-      name.toLowerCase().includes("book")
+      lowerName.includes("read") ||
+      lowerName.includes("book")
     ) {
       category = "Personal Growth";
     } else if (
       selectedImage.includes("laptop") ||
-      name.toLowerCase().includes("project") ||
-      name.toLowerCase().includes("code") ||
-      name.toLowerCase().includes("work")
+      lowerName.includes("project") ||
+      lowerName.includes("code") ||
+      lowerName.includes("work")
     ) {
       category = "Work & Projects";
     } else if (
       selectedImage.includes("shopping") ||
-      name.toLowerCase().includes("shop")
+      lowerName.includes("shop")
     ) {
       category = "Shopping";
     }
@@ -297,7 +185,7 @@ const CreateTaskModal = ({ isOpen, onClose, onAddTask }) => {
       time: timeString,
       repeat: repeat || "Daily",
       goal: goal.trim() || "Stay fit and healthy",
-      notesMode: notesMode, // 'text' | 'points'
+      notesMode: notesMode,
       notesHeader: finalHeader,
       bulletPoints: finalBulletPoints,
       notes: finalNotes,
@@ -346,101 +234,19 @@ const CreateTaskModal = ({ isOpen, onClose, onAddTask }) => {
             />
           </div>
 
-          {/* Image Upload / Picker */}
-          <div>
-            <label className="block text-sm font-semibold text-neutral-900 mb-1.5">
-              Image
-            </label>
+          {/* Image Upload / 3D Preset Picker */}
+          <ImagePicker
+            selectedImage={selectedImage}
+            onSelectImage={setSelectedImage}
+            onSelectPreset={handlePresetSelect}
+          />
 
-            <input
-              type="file"
-              ref={fileInputRef}
-              onChange={handleFileUpload}
-              accept="image/*"
-              className="hidden"
-            />
-
-            <div
-              onClick={() => fileInputRef.current?.click()}
-              className="border border-dashed border-neutral-300 rounded-2xl p-4 flex flex-col items-center justify-center bg-white hover:bg-neutral-50 transition-colors cursor-pointer group relative"
-            >
-              {selectedImage ? (
-                <div className="flex items-center gap-4 w-full">
-                  <div className="w-16 h-16 rounded-xl bg-[#F5F3ED] overflow-hidden flex items-center justify-center p-1 shrink-0 border border-neutral-200">
-                    <img
-                      src={selectedImage}
-                      alt="Selected"
-                      className="w-full h-full object-contain"
-                    />
-                  </div>
-                  <div className="flex-1 text-left">
-                    <span className="text-xs font-bold text-neutral-800 block">
-                      Custom 3D / Photo Selected
-                    </span>
-                    <span className="text-[11px] text-neutral-400">
-                      Click to upload another image from your device
-                    </span>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      fileInputRef.current?.click();
-                    }}
-                    className="p-2 rounded-xl bg-neutral-100 hover:bg-neutral-200 text-neutral-700 text-xs font-semibold"
-                  >
-                    Change
-                  </button>
-                </div>
-              ) : (
-                <div className="flex flex-col items-center py-2">
-                  <div className="w-10 h-10 rounded-full bg-neutral-100 flex items-center justify-center text-neutral-600 mb-1.5 group-hover:scale-105 transition-transform">
-                    <ImageIcon size={20} strokeWidth={2} />
-                  </div>
-                  <span className="text-sm font-semibold text-neutral-800">
-                    Add task image
-                  </span>
-                  <span className="text-xs text-neutral-400 mt-0.5">
-                    Click to upload from device
-                  </span>
-                </div>
-              )}
-            </div>
-
-            {/* Quick 3D Presets */}
-            <div className="mt-2.5 flex items-center gap-2 overflow-x-auto no-scrollbar">
-              <span className="text-[11px] font-semibold text-neutral-400 shrink-0">
-                Presets:
-              </span>
-              {PRESET_IMAGES.map((preset) => (
-                <button
-                  key={preset.label}
-                  type="button"
-                  onClick={() => handlePresetSelect(preset)}
-                  className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border transition-all cursor-pointer ${
-                    selectedImage === preset.src
-                      ? "border-neutral-900 bg-neutral-900 text-white shadow-xs"
-                      : "border-neutral-200 bg-neutral-50 hover:bg-neutral-100 text-neutral-700"
-                  }`}
-                >
-                  <img
-                    src={preset.src}
-                    alt={preset.label}
-                    className="w-3.5 h-3.5 object-contain rounded-full"
-                  />
-                  <span>{preset.label}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Date Picker (Calendar icon on side triggers calendar selection) */}
+          {/* Date Picker */}
           <div>
             <div className="flex items-center justify-between mb-1.5">
               <label className="text-sm font-semibold text-neutral-900">
                 Date
               </label>
-              {/* Quick toggle chips */}
               <div className="flex items-center gap-1.5 text-xs">
                 <button
                   type="button"
@@ -468,7 +274,7 @@ const CreateTaskModal = ({ isOpen, onClose, onAddTask }) => {
             </div>
 
             <div
-              onClick={handleOpenDatePicker}
+              onClick={() => handleOpenPicker(dateInputRef)}
               className="bg-[#F4F4F6] hover:bg-[#EEEDF0] rounded-xl px-4 py-3 flex items-center justify-between text-sm text-neutral-900 cursor-pointer transition-colors relative group"
             >
               <div className="flex items-center gap-3 flex-1 min-w-0">
@@ -486,12 +292,11 @@ const CreateTaskModal = ({ isOpen, onClose, onAddTask }) => {
                 )}
               </div>
 
-              {/* Side Calendar Icon: Specifically opens calendar picker when clicked */}
               <button
                 type="button"
                 onClick={(e) => {
                   e.stopPropagation();
-                  handleOpenDatePicker();
+                  handleOpenPicker(dateInputRef);
                 }}
                 className="p-1 rounded-lg hover:bg-neutral-200 text-neutral-500 hover:text-neutral-900 transition-colors cursor-pointer"
                 title="Choose date from calendar"
@@ -499,7 +304,6 @@ const CreateTaskModal = ({ isOpen, onClose, onAddTask }) => {
                 <Calendar size={18} className="shrink-0" />
               </button>
 
-              {/* Native HTML5 Date Picker triggered on click */}
               <input
                 ref={dateInputRef}
                 type="date"
@@ -512,7 +316,7 @@ const CreateTaskModal = ({ isOpen, onClose, onAddTask }) => {
             </div>
           </div>
 
-          {/* Time Picker (Start Time - End Time, clicking shows time picker) */}
+          {/* Time Picker */}
           <div>
             <div className="flex items-center justify-between mb-1.5">
               <label className="text-sm font-semibold text-neutral-900">
@@ -524,9 +328,8 @@ const CreateTaskModal = ({ isOpen, onClose, onAddTask }) => {
             </div>
 
             <div className="flex items-center gap-2">
-              {/* Start Time Box */}
               <div
-                onClick={handleOpenStartTime}
+                onClick={() => handleOpenPicker(startTimeInputRef)}
                 className="flex-1 bg-[#F4F4F6] hover:bg-[#EEEDF0] rounded-xl px-3.5 py-3 flex items-center justify-between text-sm text-neutral-900 cursor-pointer transition-colors relative group"
                 title="Select start time"
               >
@@ -539,10 +342,6 @@ const CreateTaskModal = ({ isOpen, onClose, onAddTask }) => {
                     {formatTime12h(startTime)}
                   </span>
                 </div>
-                <Clock
-                  size={16}
-                  className="text-neutral-400 group-hover:text-neutral-700 transition-colors shrink-0"
-                />
                 <input
                   ref={startTimeInputRef}
                   type="time"
@@ -556,9 +355,8 @@ const CreateTaskModal = ({ isOpen, onClose, onAddTask }) => {
 
               <span className="text-neutral-400 font-bold text-xs">–</span>
 
-              {/* End Time Box */}
               <div
-                onClick={handleOpenEndTime}
+                onClick={() => handleOpenPicker(endTimeInputRef)}
                 className="flex-1 bg-[#F4F4F6] hover:bg-[#EEEDF0] rounded-xl px-3.5 py-3 flex items-center justify-between text-sm text-neutral-900 cursor-pointer transition-colors relative group"
                 title="Select end time"
               >
@@ -571,10 +369,6 @@ const CreateTaskModal = ({ isOpen, onClose, onAddTask }) => {
                     {formatTime12h(endTime)}
                   </span>
                 </div>
-                <Clock
-                  size={16}
-                  className="text-neutral-400 group-hover:text-neutral-700 transition-colors shrink-0"
-                />
                 <input
                   ref={endTimeInputRef}
                   type="time"
@@ -588,7 +382,7 @@ const CreateTaskModal = ({ isOpen, onClose, onAddTask }) => {
             </div>
           </div>
 
-          {/* Repeat Option */}
+          {/* Repeat */}
           <div>
             <label className="block text-sm font-semibold text-neutral-900 mb-1.5">
               Repeat
@@ -636,7 +430,6 @@ const CreateTaskModal = ({ isOpen, onClose, onAddTask }) => {
                 Notes
               </label>
 
-              {/* Segmented Toggle: Text | Points */}
               <div className="bg-[#EFEFEF] p-0.5 rounded-xl flex items-center text-xs font-semibold border border-neutral-200">
                 <button
                   type="button"
@@ -690,7 +483,6 @@ const CreateTaskModal = ({ isOpen, onClose, onAddTask }) => {
               </div>
             </div>
 
-            {/* Mode 1: Text Mode */}
             {notesMode === "text" ? (
               <div className="space-y-2">
                 <div className="bg-[#F4F4F6] rounded-xl px-4 py-2.5 flex items-center gap-2.5 text-sm text-neutral-900">
@@ -699,7 +491,7 @@ const CreateTaskModal = ({ isOpen, onClose, onAddTask }) => {
                     type="text"
                     value={notesHeader}
                     onChange={(e) => setNotesHeader(e.target.value)}
-                    placeholder="Heading / Subject (optional, e.g. Full body workout)"
+                    placeholder="Heading / Subject (optional)"
                     className="bg-transparent border-none outline-none text-xs text-neutral-900 font-semibold w-full placeholder:text-neutral-400"
                   />
                 </div>
@@ -715,9 +507,7 @@ const CreateTaskModal = ({ isOpen, onClose, onAddTask }) => {
                 </div>
               </div>
             ) : (
-              /* Mode 2: Points Mode (Step-by-step points: "is ki bad ye kar na hai") */
               <div className="space-y-2">
-                {/* Heading for Points */}
                 <div className="bg-[#F4F4F6] rounded-xl px-4 py-2.5 flex items-center gap-2.5 text-sm text-neutral-900">
                   <FileText size={16} className="text-neutral-400 shrink-0" />
                   <input
@@ -729,7 +519,6 @@ const CreateTaskModal = ({ isOpen, onClose, onAddTask }) => {
                   />
                 </div>
 
-                {/* Interactive Points List */}
                 <div className="bg-[#F4F4F6] rounded-xl p-3 space-y-2 max-h-[190px] overflow-y-auto no-scrollbar">
                   {points.map((pt, idx) => (
                     <div
@@ -755,15 +544,7 @@ const CreateTaskModal = ({ isOpen, onClose, onAddTask }) => {
                             setPoints(next);
                           }
                         }}
-                        placeholder={`Step ${idx + 1}: e.g. ${
-                          idx === 0
-                            ? "10 min warm up"
-                            : idx === 1
-                            ? "30 min strength training"
-                            : idx === 2
-                            ? "10 min cardio"
-                            : "10 min cool down"
-                        }`}
+                        placeholder={`Step ${idx + 1}`}
                         className="bg-transparent border-none outline-none text-xs text-neutral-900 font-medium w-full placeholder:text-neutral-400"
                       />
                       {points.length > 1 && (
@@ -794,7 +575,7 @@ const CreateTaskModal = ({ isOpen, onClose, onAddTask }) => {
             )}
           </div>
 
-          {/* Submit Button */}
+          {/* Submit */}
           <div className="pt-2">
             <button
               type="submit"

@@ -1,5 +1,5 @@
 import React from "react";
-import { Check, Edit3, Trash2, Tag, AlertCircle, Clock, Calendar, ArrowUpRight } from "lucide-react";
+import { Check, Edit3, Trash2, Clock } from "lucide-react";
 import { formatDateLabel } from "../../utils/dateUtils";
 
 const TaskCard = ({ task, onToggleStatus, onEdit, onDelete, onSelectTask }) => {

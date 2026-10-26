@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Star, MoreVertical, Edit3, Trash2, Calendar, Tag } from "lucide-react";
+import { Star, MoreVertical, Edit3, Trash2, Calendar } from "lucide-react";
 
 // Subtle pastel color styles matching Taskly aesthetic
 export const NOTE_COLORS = {

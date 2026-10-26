@@ -1,16 +1,35 @@
 import React, { useState, useEffect, useRef } from "react";
 import Sidebar from "../components/sidebar/Sidebar";
-import { Check, Trash2, Camera, CheckCircle2, Bot, Sparkles, LogOut } from "lucide-react";
-
-const LOCAL_STORAGE_PROFILE_KEY = "taskly_profile_v1";
+import {
+  CheckCircle2,
+  Bot,
+  RotateCcw,
+} from "lucide-react";
+import {
+  STORAGE_KEYS,
+  getStorageItem,
+  setStorageItem,
+  clearTasklyStorage,
+} from "../utils/storage";
 
 const ACCENT_COLORS = [
-  { id: "emerald", label: "Emerald Green", hex: "#10B981", activeRing: "ring-[#10B981]" },
-  { id: "blue", label: "Royal Blue", hex: "#3B82F6", activeRing: "ring-[#3B82F6]" },
-  { id: "orange", label: "Vibrant Orange", hex: "#F97316", activeRing: "ring-[#F97316]" },
-  { id: "pink", label: "Soft Pink", hex: "#EC4899", activeRing: "ring-[#EC4899]" },
-  { id: "purple", label: "Royal Purple", hex: "#8B5CF6", activeRing: "ring-[#8B5CF6]" },
+  { id: "emerald", label: "Emerald Green", hex: "#10B981" },
+  { id: "blue", label: "Royal Blue", hex: "#3B82F6" },
+  { id: "orange", label: "Vibrant Orange", hex: "#F97316" },
+  { id: "pink", label: "Soft Pink", hex: "#EC4899" },
+  { id: "purple", label: "Royal Purple", hex: "#8B5CF6" },
 ];
+
+const DEFAULT_PROFILE = {
+  fullName: "Ravi Yadav",
+  email: "ravi.yadav@taskly.io",
+  role: "TYCS Computer Science",
+  timeZone: "IST (Indian Standard Time)",
+  avatar: "/assets/avatar.jpg",
+  theme: "normal",
+  accentColor: "emerald",
+  showFloatingBot: false,
+};
 
 const Settings = ({
   embedded = false,
@@ -18,29 +37,9 @@ const Settings = ({
   setActiveTab = () => {},
   onOpenSynopsis = () => {},
   onOpenChatbot = () => {},
-  onLogout = () => {},
-  currentUser = null,
 }) => {
-  // Profile information state
   const [profile, setProfile] = useState(() => {
-    try {
-      const saved = localStorage.getItem(LOCAL_STORAGE_PROFILE_KEY);
-      if (saved) {
-        return JSON.parse(saved);
-      }
-    } catch (e) {
-      console.error("Failed to load profile:", e);
-    }
-    return {
-      fullName: "Alex Morgan",
-      email: "alex.morgan@taskly.io",
-      role: "Product Designer",
-      timeZone: "Pacific Time (PT)",
-      avatar: "/assets/avatar.jpg",
-      theme: "light", // 'light' | 'dark' | 'system'
-      accentColor: "emerald",
-      showFloatingBot: false, // Default is FALSE (hidden by default)
-    };
+    return getStorageItem(STORAGE_KEYS.PROFILE, DEFAULT_PROFILE);
   });
 
   const [savedSuccess, setSavedSuccess] = useState(false);
@@ -48,12 +47,10 @@ const Settings = ({
 
   // Sync to localStorage and broadcast to app
   useEffect(() => {
-    try {
-      localStorage.setItem(LOCAL_STORAGE_PROFILE_KEY, JSON.stringify(profile));
-      window.dispatchEvent(new CustomEvent("taskly_settings_updated", { detail: profile }));
-    } catch (e) {
-      console.error("Failed to save profile:", e);
-    }
+    setStorageItem(STORAGE_KEYS.PROFILE, profile);
+    window.dispatchEvent(
+      new CustomEvent("taskly_settings_updated", { detail: profile })
+    );
   }, [profile]);
 
   const handleInputChange = (field, value) => {
@@ -78,24 +75,22 @@ const Settings = ({
 
   const handleSaveChanges = (e) => {
     e?.preventDefault();
-    try {
-      localStorage.setItem(LOCAL_STORAGE_PROFILE_KEY, JSON.stringify(profile));
-      window.dispatchEvent(new CustomEvent("taskly_settings_updated", { detail: profile }));
-      setSavedSuccess(true);
-      setTimeout(() => setSavedSuccess(false), 3000);
-    } catch (err) {
-      console.error("Error saving profile:", err);
-    }
+    setStorageItem(STORAGE_KEYS.PROFILE, profile);
+    window.dispatchEvent(
+      new CustomEvent("taskly_settings_updated", { detail: profile })
+    );
+    setSavedSuccess(true);
+    setTimeout(() => setSavedSuccess(false), 3000);
   };
 
   const handleDeleteAccount = () => {
     if (
       window.confirm(
-        "Are you sure you want to permanently delete your account and all associated tasks and notes? This action cannot be undone."
+        "Are you sure you want to reset all tasks, notes, and metrics back to initial defaults? This action cannot be undone."
       )
     ) {
-      localStorage.clear();
-      alert("All account data has been reset to defaults.");
+      clearTasklyStorage();
+      alert("All workspace data has been reset to defaults.");
       window.location.reload();
     }
   };
@@ -125,17 +120,13 @@ const Settings = ({
           Profile Information
         </h2>
         <p className="text-xs text-neutral-500 mt-1 mb-6 font-medium">
-          Update your personal details, profile photo, and role.
+          Update your personal details, name, and role for this workspace.
         </p>
 
         {/* Avatar Row */}
         <div className="flex items-center gap-4 mb-6">
-          <div className="relative">
-            <img
-              src={profile.avatar || "/assets/avatar.jpg"}
-              alt={profile.fullName}
-              className="w-16 h-16 rounded-full object-cover shadow-sm border-2 border-neutral-200"
-            />
+          <div className="w-16 h-16 rounded-2xl bg-neutral-900 text-white flex items-center justify-center font-black text-xl shadow-xs">
+            {profile.fullName ? profile.fullName.charAt(0).toUpperCase() : "R"}
           </div>
 
           <div>
@@ -162,7 +153,6 @@ const Settings = ({
         {/* Inputs Form */}
         <form onSubmit={handleSaveChanges} className="space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {/* Full Name */}
             <div>
               <label className="block text-xs font-semibold text-neutral-700 mb-1.5">
                 Full Name
@@ -171,12 +161,11 @@ const Settings = ({
                 type="text"
                 value={profile.fullName || ""}
                 onChange={(e) => handleInputChange("fullName", e.target.value)}
-                placeholder="Alex Morgan"
+                placeholder="Ravi Yadav"
                 className="w-full bg-[#FAF9F6] focus:bg-white border border-neutral-200 rounded-xl px-4 py-2.5 text-xs font-medium text-neutral-900 outline-none focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900/10 transition-all shadow-2xs"
               />
             </div>
 
-            {/* Email */}
             <div>
               <label className="block text-xs font-semibold text-neutral-700 mb-1.5">
                 Email
@@ -185,29 +174,25 @@ const Settings = ({
                 type="email"
                 value={profile.email || ""}
                 onChange={(e) => handleInputChange("email", e.target.value)}
-                placeholder="alex.morgan@taskly.io"
+                placeholder="ravi.yadav@taskly.io"
                 className="w-full bg-[#FAF9F6] focus:bg-white border border-neutral-200 rounded-xl px-4 py-2.5 text-xs font-medium text-neutral-900 outline-none focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900/10 transition-all shadow-2xs"
               />
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {/* Role */}
-            <div className="sm:col-span-2">
-              <label className="block text-xs font-semibold text-neutral-700 mb-1.5">
-                Role / Title
-              </label>
-              <input
-                type="text"
-                value={profile.role || ""}
-                onChange={(e) => handleInputChange("role", e.target.value)}
-                placeholder="Product Designer"
-                className="w-full bg-[#FAF9F6] focus:bg-white border border-neutral-200 rounded-xl px-4 py-2.5 text-xs font-medium text-neutral-900 outline-none focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900/10 transition-all shadow-2xs"
-              />
-            </div>
+          <div>
+            <label className="block text-xs font-semibold text-neutral-700 mb-1.5">
+              Role / Title
+            </label>
+            <input
+              type="text"
+              value={profile.role || ""}
+              onChange={(e) => handleInputChange("role", e.target.value)}
+              placeholder="TYCS Computer Science"
+              className="w-full bg-[#FAF9F6] focus:bg-white border border-neutral-200 rounded-xl px-4 py-2.5 text-xs font-medium text-neutral-900 outline-none focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900/10 transition-all shadow-2xs"
+            />
           </div>
 
-          {/* Save Changes Button */}
           <div className="flex justify-end pt-3">
             <button
               type="submit"
@@ -228,13 +213,12 @@ const Settings = ({
           Customize how Taskly looks on your device. Choose between Taskly's signature warm cream or crisp light mode.
         </p>
 
-        {/* Theme Section: Only Normal (Default) and Light */}
+        {/* Theme Selection */}
         <div className="mb-6">
           <label className="block text-xs font-semibold text-neutral-700 mb-3">
             Theme
           </label>
           <div className="grid grid-cols-2 gap-4 max-w-md">
-            {/* Normal / Default Theme */}
             <div
               onClick={() => {
                 handleInputChange("theme", "normal");
@@ -250,7 +234,6 @@ const Settings = ({
               <span className="text-xs font-bold text-neutral-800">Normal (Default Warm)</span>
             </div>
 
-            {/* Light */}
             <div
               onClick={() => {
                 handleInputChange("theme", "light");
@@ -268,7 +251,7 @@ const Settings = ({
           </div>
         </div>
 
-        {/* Accent Color Section */}
+        {/* Accent Color Selection */}
         <div>
           <label className="block text-xs font-semibold text-neutral-700 mb-3">
             Accent Color
@@ -292,7 +275,7 @@ const Settings = ({
         </div>
       </div>
 
-      {/* 3. CARD 3: TaskBot AI Assistant Floating Button Visibility Setting */}
+      {/* 3. CARD 3: TaskBot AI Floating Button Visibility Setting */}
       <div className="bg-white rounded-3xl p-6 lg:p-8 shadow-sm border border-neutral-150 mb-6">
         <div className="flex items-start sm:items-center justify-between gap-4">
           <div className="flex items-start gap-3.5">
@@ -316,17 +299,15 @@ const Settings = ({
           <button
             type="button"
             onClick={() => {
-              const nextVal = !Boolean(profile.showFloatingBot);
+              const nextVal = !profile.showFloatingBot;
               const updatedProfile = { ...profile, showFloatingBot: nextVal };
               setProfile(updatedProfile);
-              try {
-                localStorage.setItem(LOCAL_STORAGE_PROFILE_KEY, JSON.stringify(updatedProfile));
-                window.dispatchEvent(new CustomEvent("taskly_settings_updated", { detail: updatedProfile }));
-                setSavedSuccess(true);
-                setTimeout(() => setSavedSuccess(false), 2000);
-              } catch (e) {
-                console.error(e);
-              }
+              setStorageItem(STORAGE_KEYS.PROFILE, updatedProfile);
+              window.dispatchEvent(
+                new CustomEvent("taskly_settings_updated", { detail: updatedProfile })
+              );
+              setSavedSuccess(true);
+              setTimeout(() => setSavedSuccess(false), 2000);
             }}
             className={`relative inline-flex h-7 w-13 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
               profile.showFloatingBot ? "bg-emerald-500" : "bg-neutral-300"
@@ -353,57 +334,45 @@ const Settings = ({
         </div>
       </div>
 
-      {/* 4. CARD 4: Delete Account */}
+      {/* 4. CARD 4: Reset Workspace Data */}
       <div className="bg-[#FFF8F8] border border-rose-200 rounded-3xl p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
-          <h3 className="font-bold text-rose-600 text-sm">Delete Account & Reset Data</h3>
+          <h3 className="font-bold text-rose-600 text-sm">Reset Workspace to Defaults</h3>
           <p className="text-xs text-rose-500 mt-0.5 font-medium">
-            Permanently delete your profile and reset all tasks and notes to default. This cannot be undone.
+            Reset all tasks, notes, and metrics back to initial sample deliverables.
           </p>
         </div>
 
         <button
           type="button"
           onClick={handleDeleteAccount}
-          className="border border-rose-300 hover:bg-rose-100/60 text-rose-600 rounded-xl px-5 py-2.5 text-xs font-bold transition-colors cursor-pointer shrink-0"
+          className="border border-rose-300 hover:bg-rose-100/60 text-rose-600 rounded-xl px-5 py-2.5 text-xs font-bold transition-colors cursor-pointer shrink-0 flex items-center gap-1.5"
         >
-          Reset All Data
+          <RotateCcw size={13} />
+          <span>Reset All Data</span>
         </button>
       </div>
 
-      {/* 5. CARD 5: Account Session & Sign Out */}
-      <div className="bg-white rounded-3xl p-6 border border-neutral-150 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      {/* 5. CARD 5: Active Workspace Status */}
+      <div className="bg-white rounded-3xl p-6 border border-neutral-150 shadow-sm flex items-center justify-between gap-4">
         <div className="flex items-center gap-3.5">
-          <div className="w-12 h-12 rounded-2xl bg-neutral-900 text-white flex items-center justify-center font-bold text-sm shrink-0 shadow-xs">
-            {profile.fullName ? profile.fullName.charAt(0).toUpperCase() : "U"}
+          <div className="w-12 h-12 rounded-2xl bg-neutral-900 text-white flex items-center justify-center font-black text-sm shrink-0 shadow-xs">
+            {profile.fullName ? profile.fullName.charAt(0).toUpperCase() : "R"}
           </div>
           <div>
             <div className="flex items-center gap-2">
               <h3 className="font-bold text-neutral-900 text-sm">
-                {profile.fullName || "User Account"}
+                {profile.fullName || "Ravi Yadav"}
               </h3>
               <span className="px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 text-[10px] font-bold border border-emerald-200">
-                Active Session
+                Personal Workspace Active
               </span>
             </div>
             <p className="text-xs text-neutral-500 font-medium mt-0.5">
-              {profile.email || "user@taskly.io"} • Signed In
+              {profile.email || "ravi.yadav@taskly.io"} • Direct Access Enabled
             </p>
           </div>
         </div>
-
-        <button
-          type="button"
-          onClick={() => {
-            if (window.confirm("Are you sure you want to sign out of your account?")) {
-              onLogout();
-            }
-          }}
-          className="border border-neutral-300 hover:border-neutral-900 hover:bg-neutral-900 hover:text-white text-neutral-700 rounded-xl px-5 py-2.5 text-xs font-bold transition-all cursor-pointer shrink-0 flex items-center gap-2 shadow-2xs"
-        >
-          <LogOut size={14} />
-          <span>Sign Out / Log Out</span>
-        </button>
       </div>
     </div>
   );

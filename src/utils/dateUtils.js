@@ -49,3 +49,17 @@ export const formatDateLabel = (dateStr) => {
 export const getTodayDateInput = () => {
   return new Date().toISOString().split("T")[0];
 };
+
+/**
+ * Convert 24-hr (HH:mm) to 12-hr format (e.g., "6:00 PM")
+ */
+export const formatTime12h = (time24) => {
+  if (!time24) return "--:-- --";
+  const [hStr, mStr] = time24.split(":");
+  let h = parseInt(hStr, 10);
+  const m = mStr || "00";
+  const ampm = h >= 12 ? "PM" : "AM";
+  h = h % 12;
+  h = h ? h : 12;
+  return `${h}:${m} ${ampm}`;
+};

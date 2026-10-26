@@ -1,25 +1,21 @@
 import React, { useState, useEffect } from "react";
+import { STORAGE_KEYS, getStorageItem } from "../../utils/storage";
 
-const LOCAL_STORAGE_PROFILE_KEY = "taskly_profile_v1";
+const DEFAULT_PROFILE = {
+  fullName: "Ravi Yadav",
+  email: "ravi.yadav@taskly.io",
+  role: "TYCS Computer Science",
+  avatar: "/assets/avatar.jpg",
+};
 
 const SidebarProfile = ({ onOpenSynopsis, onOpenSettings }) => {
   const [profile, setProfile] = useState(() => {
-    try {
-      const saved = localStorage.getItem(LOCAL_STORAGE_PROFILE_KEY);
-      if (saved) return JSON.parse(saved);
-    } catch (e) {}
-    return {
-      fullName: "Alex Morgan",
-      avatar: "/assets/avatar.jpg",
-    };
+    return getStorageItem(STORAGE_KEYS.PROFILE, DEFAULT_PROFILE);
   });
 
   useEffect(() => {
     const handleUpdate = () => {
-      try {
-        const saved = localStorage.getItem(LOCAL_STORAGE_PROFILE_KEY);
-        if (saved) setProfile(JSON.parse(saved));
-      } catch (e) {}
+      setProfile(getStorageItem(STORAGE_KEYS.PROFILE, DEFAULT_PROFILE));
     };
 
     window.addEventListener("taskly_settings_updated", handleUpdate);
@@ -33,16 +29,19 @@ const SidebarProfile = ({ onOpenSynopsis, onOpenSettings }) => {
   return (
     <div
       onClick={onOpenSettings || onOpenSynopsis}
-      className="p-3 bg-[#EDE9E1] hover:bg-[#E5E0D6] rounded-[24px] w-fit cursor-pointer transition-all shadow-xs group"
-      title={`Click to view Profile & Settings (${profile.fullName || "Alex Morgan"})`}
+      className="flex items-center gap-3 p-2 rounded-2xl hover:bg-neutral-200/50 transition-colors cursor-pointer"
+      title="Open Profile & Settings"
     >
-      <div className="relative">
-        <img
-          src={profile.avatar || "/assets/avatar.jpg"}
-          alt={profile.fullName || "User Avatar"}
-          className="w-12 h-12 rounded-full object-cover shadow-sm group-hover:scale-105 transition-transform"
-        />
-        <span className="w-3 h-3 rounded-full bg-emerald-500 border-2 border-[#EDE9E1] absolute bottom-0 right-0"></span>
+      <div className="w-10 h-10 rounded-full bg-neutral-900 text-white flex items-center justify-center font-black text-sm shrink-0 border border-neutral-300/80 shadow-xs">
+        {profile.fullName ? profile.fullName.charAt(0).toUpperCase() : "R"}
+      </div>
+      <div className="flex-1 min-w-0">
+        <h4 className="text-sm font-bold text-neutral-900 truncate">
+          {profile.fullName || "Ravi Yadav"}
+        </h4>
+        <p className="text-[11px] text-neutral-500 font-medium truncate">
+          {profile.role || "TYCS Computer Science"}
+        </p>
       </div>
     </div>
   );
