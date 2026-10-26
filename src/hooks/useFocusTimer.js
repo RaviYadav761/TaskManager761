@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { STORAGE_KEYS, getStorageItem, setStorageItem } from "../utils/storage";
-import { playVictoryChime } from "../utils/audio";
 
 export const useFocusTimer = (tasks, onTaskCompleted) => {
   // Focus Timer persistent state
@@ -51,7 +50,6 @@ export const useFocusTimer = (tasks, onTaskCompleted) => {
 
         if (remaining <= 0) {
           clearInterval(interval);
-          playVictoryChime();
 
           if (focusTimer.taskId && onTaskCompletedRef.current) {
             onTaskCompletedRef.current(focusTimer.taskId);
@@ -162,7 +160,6 @@ export const useFocusTimer = (tasks, onTaskCompleted) => {
     if (focusTimer.taskId && onTaskCompletedRef.current) {
       onTaskCompletedRef.current(focusTimer.taskId);
     }
-    playVictoryChime();
 
     setFocusStats((prev) => {
       const updated = {

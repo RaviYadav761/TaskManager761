@@ -8,7 +8,6 @@ import {
   Clock,
   Target,
 } from "lucide-react";
-import { playVictoryChime } from "../../utils/audio";
 
 const DURATION_PRESETS = [
   { label: "15 Min", minutes: 15 },
@@ -95,7 +94,6 @@ const TaskFocusTimer = ({
         globalCompleteEarly();
       } else if (onToggleStatus) {
         onToggleStatus(currentTask.id);
-        playVictoryChime();
       }
     }
   };
